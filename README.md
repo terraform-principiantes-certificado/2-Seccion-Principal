@@ -230,7 +230,7 @@ Al almacenar el estado de Terraform en un bucket de S3 con bloqueo de estado en 
         terraform version
         ```
 - terraform providers:
-        - Lista los proveedores de infraestructura requeridos por la configuración.
+    -  Lista los proveedores de infraestructura requeridos por la configuración.
         ```sh
         terraform providers
         ````
