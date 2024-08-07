@@ -1,6 +1,6 @@
 # 2-Seccion-Principal
 1. [Terraform State](#schema1)
-
+2. [Comandos en Terraform](#schema2)
 
 
 [REF](#schemaref)
@@ -108,3 +108,152 @@ Al almacenar el estado de Terraform en un bucket de S3 con bloqueo de estado en 
 - **Función de DynamoDB:** Gestionar el bloqueo de estado para evitar conflictos y mantener la consistencia del estado cuando múltiples usuarios trabajan en la misma infraestructura.
 - **Configuración:** Crear una tabla de DynamoDB y configurar Terraform para usarla junto con el backend de S3.
 - **Proceso:** Terraform intenta crear un bloqueo en DynamoDB antes de modificar el estado, asegurando que solo un proceso pueda hacer cambios a la vez.
+
+<hr>
+
+<a name="schema2"></a>
+
+
+## 2. Comandos en Terraform
+
+### Comandos para Gestión del Ciclo de Vida
+- terraform apply:
+    - Aplica los cambios necesarios para alcanzar el estado deseado de la configuración.
+        ```sh
+        terraform apply
+        ```
+
+- terraform plan:
+    - Genera un plan de ejecución, mostrando los cambios que Terraform hará en la infraestructura.
+        ```sh
+        terraform plan
+        ```
+- terraform destroy:
+    - Destruye la infraestructura gestionada por Terraform.
+        ```sh
+        terraform destroy
+        ``` 
+
+- terraform refresh:
+    - Actualiza el estado de Terraform para que coincida con la infraestructura real.
+        ```sh
+        terraform refresh
+        ```
+
+- terraform init:
+    - Inicializa un directorio de trabajo con archivos de configuración de Terraform.
+        ```sh
+        terraform init
+        ```
+- terraform validate:
+    - Verifica que los archivos de configuración son válidos y que no hay errores de sintaxis.
+        ```sh
+        terraform validate
+        ``` 
+
+
+### Comandos para Gestión del Estado
+- terraform state list:
+    - Lista todos los recursos en el estado.
+        ```sh
+        terraform state list
+        ```
+- terraform state show:
+    - Muestra los detalles de un recurso específico en el estado.
+        ```sh
+        terraform state show <resource_name>
+        ```
+- terraform state mv:
+    - Mueve un recurso gestionado de un nombre a otro.
+        ```sh
+        terraform state mv <source> <destination>
+        ```
+- terraform state rm:
+    - Elimina un recurso del estado sin destruir el recurso real.
+        ```sh
+        terraform state rm <resource_name>
+        ```
+- terraform state pull:
+    - Descarga el estado actual de Terraform del backend remoto.
+        ```sh
+        terraform state pull
+        ```
+- terraform state push:
+    - Sube un archivo de estado al backend remoto.
+        ```sh
+        terraform state push
+        ```
+
+### Comandos para Gestión de Recursos
+- terraform import:
+    - Importa recursos existentes en Terraform para que puedan ser gestionados.
+        ```sh
+        terraform import <resource_type>.<resource_name> <resource_id>
+        ```
+- terraform taint:
+    - Marca un recurso para recrearlo en la próxima aplicación de cambios.
+        ```sh
+        terraform taint <resource_name>
+        ``` 
+- terraform untaint:
+    - Desmarca un recurso que estaba marcado para recreación.
+        ```sh
+        terraform untaint <resource_name>
+        ```
+### Comandos para Optimización y Mantenimiento
+- terraform fmt:
+    - Formatea todos los archivos de configuración de Terraform en el directorio actual de acuerdo con el estilo de código estándar.
+        ```sh
+        terraform fmt
+        ```
+- terraform graph:
+    - Genera un gráfico visual de las dependencias de recursos y lo imprime en formato DOT.
+        ```sh
+        terraform graph | dot -Tpng > graph.png
+        ```
+- terraform output:
+    - Muestra las salidas definidas en la configuración de Terraform.
+        ```sh
+        terraform output
+        ```
+- terraform workspace:
+    - Gestiona múltiples entornos (workspaces) dentro de una misma configuración.
+        ```sh
+        terraform workspace list
+        terraform workspace new <workspace_name>
+        terraform workspace select <workspace_name>
+        terraform workspace delete <workspace_name>
+        ```
+- terraform version:
+    - Muestra la versión de Terraform que está siendo utilizada.
+        ```sh
+        terraform version
+        ```
+- terraform providers:
+        - Lista los proveedores de infraestructura requeridos por la configuración.
+        ```sh
+        terraform providers
+        ````
+
+### Comandos para Debugging y Troubleshooting
+- terraform console:
+    - Abre una consola interactiva para evaluar expresiones de Terraform.
+        ```sh
+        terraform console
+        ```
+- terraform debug:
+    - Ejecuta Terraform en modo debug, proporcionando información detallada para la resolución de problemas.
+        ```sh
+        TF_LOG=DEBUG terraform apply
+        ```
+### Otros Comandos Útiles
+- terraform login:
+    - Autentica con Terraform Cloud para acceder a las funciones avanzadas y almacenamiento de estado remoto.
+        ```sh
+        terraform login
+        ```
+- terraform logout:
+    - Cierra la sesión de Terraform Cloud.
+        ```sh
+        terraform logout
+        ```
