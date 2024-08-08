@@ -13,7 +13,7 @@ resource "aws_subnet" "public_subnet" {
     "Name" = "Public_Subnet"
   }
 }
-resource "aws_subnet" "privade_subnet" {
+resource "aws_subnet" "private_subnet" {
   vpc_id = aws_vpc.vpc_virginia.id
   cidr_block = var.subnets[1]
   tags = {

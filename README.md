@@ -1,6 +1,7 @@
 # 2-Seccion-Principal
 1. [Terraform State](#schema1)
 2. [Comandos en Terraform](#schema2)
+3. [Lifecycles](#schema3)
 
 
 [REF](#schemaref)
@@ -257,3 +258,108 @@ Al almacenar el estado de Terraform en un bucket de S3 con bloqueo de estado en 
         ```sh
         terraform logout
         ```
+<hr>
+
+<a name="schema3"></a>
+
+## 3. Lifecycles
+
+En Terraform, los `lifecycles` (ciclos de vida) son un conjunto de reglas y configuraciones que se pueden aplicar a recursos individuales para controlar cómo Terraform maneja la creación, actualización y destrucción de esos recursos. Estos bloques permiten personalizar el comportamiento predeterminado de Terraform en varias situaciones, proporcionando un control más granular sobre la gestión de la infraestructura.
+
+
+### Componentes del lifecycle en Terraform
+El bloque lifecycle se coloca dentro de la configuración de un recurso y puede contener las siguientes propiedades clave:
+
+- create_before_destroy:
+    - Esta propiedad se utiliza para forzar a Terraform a crear un recurso nuevo antes de destruir el recurso existente. Es útil en casos donde el recurso antiguo necesita permanecer activo hasta que el nuevo esté completamente configurado.
+
+    - Valor predeterminado: false
+
+        ```hcl
+        resource "aws_instance" "example" {
+        ami           = "ami-123456"
+        instance_type = "t2.micro"
+        
+        lifecycle {
+            create_before_destroy = true
+        }
+        }
+        ```
+- prevent_destroy:
+    - Esta propiedad evita que el recurso sea destruido accidentalmente. Si se intenta ejecutar un terraform destroy o una operación que implicaría la destrucción del recurso, Terraform lanzará un error y detendrá la ejecución.
+    - Valor predeterminado: false
+
+        ```hcl
+        resource "aws_s3_bucket" "example" {
+        bucket = "my-precious-bucket"
+        
+        lifecycle {
+            prevent_destroy = true
+        }
+        }
+        ```
+- ignore_changes:
+    - Esta propiedad le indica a Terraform que ignore cambios específicos en los atributos de un recurso cuando realice un terraform plan o terraform apply. Es útil cuando ciertos atributos son gestionados externamente o cuando no se desea que ciertos cambios provoquen una nueva aplicación.
+
+        ```hcl
+        resource "aws_instance" "example" {
+        ami           = "ami-123456"
+        instance_type = "t2.micro"
+        
+        lifecycle {
+            ignore_changes = [
+            tags["Name"],
+            user_data,
+            ]
+        }
+        }
+        ```
+    - En este ejemplo, si los tags o el user_data cambian fuera de Terraform, Terraform no intentará volver a aplicar esos cambios.
+
+- replace_triggered_by:
+    - Esta propiedad permite especificar que un recurso debe ser recreado si otro recurso o una variable cambia. Esta es una característica avanzada que te permite controlar la recreación de recursos en función de cambios en otros elementos de la configuración.
+
+
+
+        ```hcl
+        resource "aws_instance" "example" {
+        ami           = "ami-123456"
+        instance_type = "t2.micro"
+        
+        lifecycle {
+            replace_triggered_by = [
+            var.new_ami_id,
+            aws_security_group.example.id,
+            ]
+        }
+        }
+        ```
+    - En este caso, si el valor de `var.new_ami_id` o el ID del grupo de seguridad `aws_security_group.example` cambia, Terraform recreará la instancia aws_instance.example.
+
+[Código de ejemplo](/practica_6/)
+- `terraform apply`
+- cambiamos esta linea en el archivo `ec2.tf`: 
+```
+  subnet_id =  aws_subnet.private_subnet.id 
+```
+- y hacemos un `terraform plan`, vemos que destruye la instancia y la crea de nuevo. Ahora vamos a ver como podemos hacer los con lifecycle.
+- Vamos a usar `create_before_destroy` para que nos cree el recurso primero antes de destruirlo.
+- Otro comando que podemos usar es el `prevent_destroy`.
+![Error](./img/prevent_destroy_error.jpg)
+Nos da un error porque este comando evita que sea destruido el recurso y como en nuestro caso tenemos que destruirlo para crearlo de nuevo por eso nos da este error.
+- `ignore_changes`: ignore cambios específicos en los atributos de un recurso cuando realice un terraform plan o terraform apply.
+```
+lifecycle {
+    ignore_changes = [ ami,subnet_id ]
+  }
+```
+Al añadir estas líneas esta ignorando si hay algún cambio en el `ami` y en la `subnet_id`, como el ejercicio que estamos haciendo es de cambio en esta subnet_id, ignora totalmente ese cambio.
+- `replace_triggered_by`:recurso debe ser recreado si otro recurso o una variable cambia.
+```
+  lifecycle {
+    replace_triggered_by = [ 
+      aws_subnet.private_subnet
+     ]
+  }
+```
+Si hacemos algún cambio en la subnet privada hara que se destruya y cree de nuevo la instacia EC2.
