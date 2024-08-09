@@ -406,13 +406,13 @@ El recurso de Security Group en AWS es un componente crucial de la seguridad en 
     - Las instancias deben tener una dirección IP pública o una Elastic IP y deben estar en una subnet asociada con una tabla de rutas que apunte al IGW para que el tráfico saliente funcione.
 
 
- ### ¿Qué es una Tabla de Rutas en AWS?
-    - Función: La tabla de rutas especifica cómo el tráfico de red desde las subnets (y, por extensión, desde las instancias dentro de esas subnets) debe ser dirigido. Cada subnet dentro de una VPC está asociada a una tabla de rutas, que puede ser la tabla de rutas predeterminada de la VPC o una personalizada.
+### ¿Qué es una Tabla de Rutas en AWS?
+- Función: La tabla de rutas especifica cómo el tráfico de red desde las subnets (y, por extensión, desde las instancias dentro de esas subnets) debe ser dirigido. Cada subnet dentro de una VPC está asociada a una tabla de rutas, que puede ser la tabla de rutas predeterminada de la VPC o una personalizada.
 
-    - Componentes: Cada entrada en una tabla de rutas incluye:
+- Componentes: Cada entrada en una tabla de rutas incluye:
 
-        - Destino (Destination): Un rango de direcciones IP (CIDR) que define el destino del tráfico.
-        - Target (Destino): El recurso al que debe enviarse el tráfico destinado, como un Internet Gateway, una NAT Gateway, una instancia EC2, o un Transit Gateway.
+    - Destino (Destination): Un rango de direcciones IP (CIDR) que define el destino del tráfico.
+    - Target (Destino): El recurso al que debe enviarse el tráfico destinado, como un Internet Gateway, una NAT Gateway, una instancia EC2, o un Transit Gateway.
 
 
 
