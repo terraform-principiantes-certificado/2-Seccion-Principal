@@ -3,6 +3,7 @@
 2. [Comandos en Terraform](#schema2)
 3. [Lifecycles](#schema3)
 4. [ Practica AWS - Acceder a la instancia publica](#schema4)
+5. [Provisioners](#schema5)
 
 
 [REF](#schemaref)
@@ -430,3 +431,103 @@ El recurso de Security Group en AWS es un componente crucial de la seguridad en 
 - [DOC Route Table](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table) 
 - [DOC Route Table Association ](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table_association)
 - [DOC Security Group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group)
+
+<hr>
+
+<a name="schema5"></a>
+
+## 5. Provisioners
+
+Los `provisioners` en Terraform son bloques que se utilizan para ejecutar scripts o comandos locales o remotos en una instancia de recurso, generalmente después de que el recurso ha sido creado o actualizado. Son útiles para realizar configuraciones finales, ejecutar scripts de arranque, instalar software, o realizar cualquier otra tarea que necesite ejecutarse en el recurso una vez que esté disponible.
+
+
+### Tipos de Provisioners
+Terraform soporta varios tipos de provisioners, incluyendo:
+
+- local-exec Provisioner:
+
+    - Ejecuta comandos o scripts en la máquina local donde se está ejecutando Terraform.
+    - Útil para tareas como invocar comandos del sistema o scripts locales después de crear un recurso.
+        ```hcl
+        resource "aws_instance" "example" {
+        ami           = "ami-123456"
+        instance_type = "t2.micro"
+
+        provisioner "local-exec" {
+            command = "echo ${aws_instance.example.public_ip} >> ip_addresses.txt"
+        }
+        }
+        ```    
+- remote-exec Provisioner:
+
+- Ejecuta comandos o scripts en la máquina remota (como una instancia EC2) después de que el recurso ha sido creado.
+- Utiliza SSH o WinRM para conectarse a la instancia.
+        ```hcl
+        resource "aws_instance" "example" {
+        ami           = "ami-123456"
+        instance_type = "t2.micro"
+
+        connection {
+            type        = "ssh"
+            user        = "ubuntu"
+            private_key = file("~/.ssh/id_rsa")
+            host        = self.public_ip
+        }
+
+        provisioner "remote-exec" {
+            inline = [
+            "sudo apt-get update",
+            "sudo apt-get install -y nginx",
+            ]
+        }
+        }
+        ```
+- file Provisioner:
+
+    - Sirve para transferir archivos o directorios desde la máquina local a la máquina remota.
+    - Utiliza la misma configuración de conexión que el remote-exec.
+        ```hcl
+        resource "aws_instance" "example" {
+        ami           = "ami-123456"
+        instance_type = "t2.micro"
+
+        connection {
+            type        = "ssh"
+            user        = "ubuntu"
+            private_key = file("~/.ssh/id_rsa")
+            host        = self.public_ip
+        }
+
+        provisioner "file" {
+            source      = "index.html"
+            destination = "/var/www/html/index.html"
+        }
+        }
+        ```
+
+- Orden de Ejecución
+    - Los provisioners se ejecutan después de que el recurso ha sido creado. Si el recurso no se puede crear (por ejemplo, si la instancia EC2 no se inicia correctamente), los provisioners no se ejecutarán.
+
+- Fallos y Reintentos
+    - Por defecto, si un provisioner falla, Terraform marcará el recurso como fallido y no continuará con la ejecución. Puedes cambiar este comportamiento usando el atributo on_failure.
+
+    ```hcl
+    provisioner "remote-exec" {
+    inline = [
+        "some-failing-command",
+    ]
+
+    on_failure = "continue"  # Las opciones son "continue" o "fail"
+    }
+    ```
+### Casos de Uso Comunes
+- Configuración de Software: Instalar paquetes, configurar servicios, o desplegar aplicaciones una vez que la instancia está activa.
+- Transferencia de Archivos: Copiar archivos de configuración, scripts, o cualquier otro recurso necesario a la instancia.
+- Notificaciones: Ejecutar comandos que notifiquen a otros sistemas que el recurso está disponible o que la configuración ha terminado.
+- Ejecutar Scripts de Shell: Ejecutar scripts de shell complejos en la instancia para realizar tareas específicas.
+### Consideraciones y Buenas Prácticas
+- Provisioners como último recurso: Terraform recomienda usar provisioners solo cuando no es posible lograr el mismo resultado a través de recursos declarativos nativos de Terraform o cuando necesitas realizar una tarea específica de configuración.
+- Idempotencia: Asegúrate de que los scripts que ejecutas con provisioners sean idempotentes, es decir, que puedan ejecutarse varias veces sin causar efectos adversos.
+- Alternativas a los provisioners: Siempre que sea posible, es preferible usar recursos específicos de Terraform o herramientas de configuración de administración como Ansible, Chef, o Puppet, que están mejor equipadas para gestionar la configuración de instancias.
+### Resumen
+Los `provisioners` en Terraform son herramientas poderosas para ejecutar comandos o scripts en máquinas locales o remotas durante la creación de recursos. Aunque son útiles para configuraciones finales y tareas post-creación, deben usarse con precaución, ya que introducen imperativos en un flujo declarativo. Terraform recomienda que los `provisioners` sean utilizados solo cuando sea absolutamente necesario y cuando no existan alternativas declarativas más adecuadas.
