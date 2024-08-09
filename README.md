@@ -2,6 +2,7 @@
 1. [Terraform State](#schema1)
 2. [Comandos en Terraform](#schema2)
 3. [Lifecycles](#schema3)
+4. [ Practica AWS - Acceder a la instancia publica](#schema4)
 
 
 [REF](#schemaref)
@@ -363,3 +364,69 @@ Al añadir estas líneas esta ignorando si hay algún cambio en el `ami` y en la
   }
 ```
 Si hacemos algún cambio en la subnet privada hara que se destruya y cree de nuevo la instacia EC2.
+
+<hr>
+
+<a name="schema4"></a>
+
+## 4. Practica AWS - Acceder a la instancia pública
+
+Nos faltan recursos para poder conectarnos desde internet a nuestra instancia en nuestra subnet pública.
+
+### Recursos que nos faltan:
+- **Internet gateway:** punto de entrada y salida, desde internet hacia los recursos y de los recursos hacia internet.
+
+    - El recurso `aws_internet_gateway` en Terraform se refiere específicamente a un Internet Gateway (IGW) en AWS, que es un componente de red específico en Amazon VPC. Sin embargo, AWS ofrece varios tipos de "gateways" y es importante diferenciarlos.
+- **Tabla de enrutamiento:**
+En AWS, una tabla de rutas `route table` es un componente fundamental dentro de la Virtual Private Cloud (VPC) que define cómo se enruta el tráfico de red dentro de la VPC. Una tabla de rutas contiene un conjunto de reglas (rutas) que determinan hacia dónde se debe enviar el tráfico de red basado en la dirección IP de destino.
+
+
+- **aws_route_table_association.example_association:**
+
+    - Asocia la tabla de rutas creada con la subnet. Esto asegura que el tráfico saliente de la subnet siga las reglas definidas en la tabla de rutas.
+
+- **Security group**
+
+El recurso de Security Group en AWS es un componente crucial de la seguridad en la nube, utilizado para controlar el tráfico entrante y saliente de las instancias EC2 (y otros recursos compatibles) en una VPC. Los Security Groups actúan como firewalls virtuales que definen qué tráfico está permitido hacia o desde los recursos asociados.
+
+
+
+### ¿Qué es un Internet Gateway (IGW)?
+- Un Internet Gateway es un componente que permite que los recursos en una VPC puedan comunicarse con Internet. Es un punto de entrada y salida entre la VPC y el Internet. Los Internet Gateways son esenciales para que las instancias EC2 y otros recursos dentro de una VPC puedan recibir y enviar tráfico a través de Internet.
+
+### Características principales del Internet Gateway:
+- Entrada y Salida de Tráfico:
+
+    - Permite a las instancias en subnets públicas de una VPC enviar y recibir tráfico desde y hacia Internet.
+- Redundancia y Alta Disponibilidad:
+
+   - El Internet Gateway es altamente disponible y tolerante a fallos, escalando automáticamente para gestionar el tráfico.
+- Requisitos para el Tráfico Saliente:
+
+    - Las instancias deben tener una dirección IP pública o una Elastic IP y deben estar en una subnet asociada con una tabla de rutas que apunte al IGW para que el tráfico saliente funcione.
+
+
+ ### ¿Qué es una Tabla de Rutas en AWS?
+    - Función: La tabla de rutas especifica cómo el tráfico de red desde las subnets (y, por extensión, desde las instancias dentro de esas subnets) debe ser dirigido. Cada subnet dentro de una VPC está asociada a una tabla de rutas, que puede ser la tabla de rutas predeterminada de la VPC o una personalizada.
+
+    - Componentes: Cada entrada en una tabla de rutas incluye:
+
+        - Destino (Destination): Un rango de direcciones IP (CIDR) que define el destino del tráfico.
+        - Target (Destino): El recurso al que debe enviarse el tráfico destinado, como un Internet Gateway, una NAT Gateway, una instancia EC2, o un Transit Gateway.
+
+
+
+### ¿Qué es un Security Group en AWS?
+- Función: Los Security Groups controlan el tráfico de red a nivel de instancia, es decir, definen las reglas que permiten o bloquean el tráfico entrante y saliente en función de varios criterios, como el puerto, el protocolo, y las direcciones IP de origen o destino.
+
+- Estado: Los Security Groups son stateful, lo que significa que si permites el tráfico entrante, la respuesta correspondiente es permitida automáticamente (no es necesario definir reglas de salida separadas para la respuesta).
+
+- Reglas de Seguridad:
+
+    - Reglas de Ingreso (Inbound Rules): Controlan el tráfico que se permite entrar a las instancias.
+    - Reglas de Egreso (Outbound Rules): Controlan el tráfico que se permite salir de las instancias.
+
+[DOC Internet Gateway](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/internet_gateway)
+[DOC Route Table](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table) 
+[DOC Route Table Association ](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table_association)
+[DOC Security Group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group)
