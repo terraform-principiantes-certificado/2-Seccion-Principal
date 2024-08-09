@@ -426,7 +426,7 @@ El recurso de Security Group en AWS es un componente crucial de la seguridad en 
     - Reglas de Ingreso (Inbound Rules): Controlan el tráfico que se permite entrar a las instancias.
     - Reglas de Egreso (Outbound Rules): Controlan el tráfico que se permite salir de las instancias.
 
-[DOC Internet Gateway](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/internet_gateway)
-[DOC Route Table](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table) 
-[DOC Route Table Association ](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table_association)
-[DOC Security Group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group)
+- [DOC Internet Gateway](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/internet_gateway)
+- [DOC Route Table](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table) 
+- [DOC Route Table Association ](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table_association)
+- [DOC Security Group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group)
