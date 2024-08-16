@@ -4,7 +4,8 @@
 3. [Lifecycles](#schema3)
 4. [ Practica AWS - Acceder a la instancia publica](#schema4)
 5. [Provisioners](#schema5)
-
+6. [Terraform Taint](#schema6)
+7. [Logs en Terraform](#schema7)
 
 [REF](#schemaref)
 
@@ -531,3 +532,100 @@ Terraform soporta varios tipos de provisioners, incluyendo:
 - Alternativas a los provisioners: Siempre que sea posible, es preferible usar recursos específicos de Terraform o herramientas de configuración de administración como Ansible, Chef, o Puppet, que están mejor equipadas para gestionar la configuración de instancias.
 ### Resumen
 Los `provisioners` en Terraform son herramientas poderosas para ejecutar comandos o scripts en máquinas locales o remotas durante la creación de recursos. Aunque son útiles para configuraciones finales y tareas post-creación, deben usarse con precaución, ya que introducen imperativos en un flujo declarativo. Terraform recomienda que los `provisioners` sean utilizados solo cuando sea absolutamente necesario y cuando no existan alternativas declarativas más adecuadas.
+
+
+<hr>
+
+<a name="schema6"></a>
+
+## 6. Terraform Taint
+
+
+El comando `terraform taint` en Terraform se utiliza para marcar un recurso como "dañado" `tainted`. Esto indica que el recurso debe ser recreado en la próxima ejecución del plan de Terraform. Es una forma de forzar la recreación de un recurso sin necesidad de hacer cambios en la configuración.
+
+### ¿Qué es terraform taint?
+- Objetivo: terraform taint marca un recurso como "dañado" para que Terraform lo recree. 
+    - Esto es útil en situaciones en las que el recurso está en un estado problemático o no deseado y se necesita recrear desde cero.
+
+- Funcionamiento: Cuando un recurso es marcado como dañado, Terraform lo incluirá en la lista de recursos que deben ser destruidos y recreados en la próxima ejecución del plan. El recurso será destruido y luego creado de nuevo con la configuración actual.
+
+### Uso Básico
+- Aquí está un ejemplo básico de cómo se usa el comando terraform taint:
+
+```sh
+terraform taint aws_instance.example
+```
+- Este comando marca el recurso aws_instance.example como dañado. En la siguiente ejecución de terraform apply, Terraform destruirá esta instancia y la creará nuevamente.
+
+
+<hr>
+
+<a name="schema7"></a>
+
+## 7. Logs en Terraform
+
+En Terraform, los logs son una herramienta crucial para la depuración y el monitoreo del proceso de provisión y gestión de la infraestructura. Proporcionan información detallada sobre las operaciones realizadas por Terraform, como la creación, modificación y destrucción de recursos.
+
+### Tipos de Logs en Terraform
+- Logs de Ejecución:
+
+    - Estos logs muestran la salida estándar de los comandos de Terraform (terraform apply, terraform plan, etc.). Incluyen información sobre las acciones que Terraform está llevando a cabo, así como el estado de los recursos.
+- Logs de Depuración:
+
+    - Terraform permite habilitar un modo de depuración detallado que proporciona una visión más profunda sobre lo que está ocurriendo bajo el capó. Estos logs pueden ser muy útiles para solucionar problemas complejos y entender cómo Terraform interactúa con los proveedores y recursos.
+### Configuración de Logs en Terraform
+- Habilitar Logs de Depuración
+    - Para habilitar el modo de depuración en Terraform, se utiliza la variable de entorno TF_LOG. Esta variable controla el nivel de detalle de los logs generados por Terraform.
+
+- Niveles de Log Disponibles:
+    - TRACE: Proporciona el nivel más detallado de información de depuración.
+    - DEBUG: Muestra detalles extensos sobre la operación de Terraform, pero menos detallado que TRACE.
+    - INFO: Proporciona información general sobre las operaciones de Terraform, ideal para la mayoría de los casos de uso.
+    - WARN: Muestra advertencias que pueden indicar problemas potenciales.
+    - ERROR: Muestra solo los errores críticos que impiden que Terraform ejecute las operaciones correctamente.
+### Ejemplo de configuración:
+
+```sh
+export TF_LOG=DEBUG
+```
+- Una vez que hayas establecido TF_LOG, Terraform comenzará a emitir logs en la salida estándar. Puedes redirigir estos logs a un archivo para análisis posterior:
+
+```sh
+export TF_LOG=DEBUG
+terraform apply > terraform_debug.log 2>&1
+```
+Esto redirige tanto la salida estándar como los errores al archivo terraform_debug.log.
+
+### Configuración de la Variable TF_LOG_PATH
+- Si prefieres guardar los logs en un archivo específico, puedes usar la variable de entorno TF_LOG_PATH para definir la ruta del archivo de log.
+
+Ejemplo:
+
+```sh
+export TF_LOG_PATH="/path/to/terraform.log"
+```
+o guardar el archivo en un .txt
+```sh
+export TF_LOG_PATH=logs.txt
+```
+- Con esta configuración, Terraform escribirá los logs en el archivo especificado, lo que facilita la revisión y análisis posterior.
+
+### Ejemplos de Uso
+- Depuración de Problemas:
+    - Si encuentras un error al ejecutar terraform apply, puedes habilitar los logs de depuración para obtener más detalles sobre lo que está fallando.
+### Monitorización y Auditoría:
+- Para una auditoría completa de las operaciones de Terraform o para monitorear cambios y actividades, puedes revisar los logs generados.
+### Análisis de Desempeño:
+- Los logs detallados pueden ayudar a identificar cuellos de botella o problemas de rendimiento en la provisión de recursos.
+### Resumen
+En Terraform, los logs son esenciales para depurar y entender el comportamiento de las operaciones de infraestructura. Puedes habilitar diferentes niveles de logging usando la variable de entorno TF_LOG y redirigir los logs a archivos específicos con TF_LOG_PATH. Los logs detallados pueden ayudar a resolver problemas complejos, monitorear operaciones y auditar actividades, proporcionando una visión más profunda del funcionamiento interno de Terraform.
+
+### Eliminar las variables
+- Obtener las variables `TF_LOG`
+```
+env | grep TF_LOG
+```
+- Eliminar las variables
+```
+unset TF_LOG
+``` 

@@ -14,18 +14,18 @@ resource "aws_instance" "public_isntance" {
   #     aws_subnet.private_subnet
   #    ]
   # }
-   user_data              = file("scripts/userdata.sh")
+  #  user_data              = file("scripts/userdata.sh")
 
 
-  provisioner "local-exec" {
-    command = "echo instancia creada con IP ${aws_instance.public_instance.public_ip} >> datos_instancia.txt"
-  }
+  # provisioner "local-exec" {
+  #   command = "echo instancia creada con IP ${aws_instance.public_instance.public_ip} >> datos_instancia.txt"
+  # }
 
-  provisioner "local-exec" {
-    when    = destroy
-    command = "echo Instancia ${self.public_ip} Destruida >> datos_instancia.txt"
+  # provisioner "local-exec" {
+  #   when    = destroy
+  #   command = "echo Instancia ${self.public_ip} Destruida >> datos_instancia.txt"
 
-  }
+  # }
 
   # provisioner "remote-exec" {
   #   inline = [
