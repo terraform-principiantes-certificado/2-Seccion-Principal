@@ -6,6 +6,7 @@
 5. [Provisioners](#schema5)
 6. [Terraform Taint](#schema6)
 7. [Logs en Terraform](#schema7)
+8. [Importar recursos](#schema8)
 
 [REF](#schemaref)
 
@@ -629,3 +630,64 @@ env | grep TF_LOG
 ```
 unset TF_LOG
 ``` 
+
+<hr>
+
+<a name="schema8"></a>
+
+## 8. Importar recursos
+
+
+Que sucede cuando tenemos recrusos que alguien a desplagado sin terraform sino directamente en la consola de AWS. 
+Podemos usar la sección de `import` de terraform para traernos recursos.
+![import](./img/import.jpg).
+
+Cada recurso en AWS se puede importar en terraform, mediante un elemento distintivo del recurso, el `id`, o en el caso de las subnet el `subent_id`.
+
+- Para este ejemplo, desplegamos la practica 6. Como tenemos instancias creadas vamos a eliminarlas para poder crearlas desde la consola y hacer los imports.
+    - Desde la consola de amazon eliminamos la instacia EC2. Y desde nuestra terminal:
+        - `terraform state list`, para ver los recursos desplegados.
+        - `terraform state rm aws_instace.public_instance`: eliminamos esta instancia.
+- Creamos la instacia desde las consola de amazon:
+    - Creamos la instancia.
+    - Con nuestro vpc_virginia, nuestro security group y nuestra subnet publica.
+    ![EC2](./img/ec2.jpg)
+
+- Hacemos el import. En el archivo `ec2.tf`creamos el siguiente código.
+```
+resource "aws_instance" "mywebserver" {
+  
+}
+```
+El código de una instacia vacía. 
+- Ahora hacemos el terraform import.
+```
+terraform import aws_instance.mywebserver i-0113b20a1790ae521
+```
+Esto hace que el recurso anterior tenga código pero si nos hemos lo tenemos en state
+![Import](./img/ec2_import.jpg)
+
+Para ver el código podemos hacer:
+`terraform state show aws_instance.mywebserver`
+y copiamos el resultado. Quedando así:
+
+```resource "aws_instance" "mywebserver" {
+    ami                                  = "ami-0ae8f15ae66fe8cda"
+    instance_type                        = "t2.micro"
+    key_name                             = data.aws_key_pair.key.key_name
+    subnet_id                            = aws_subnet.public_subnet.id
+    tags                                 = {
+        "Name" = "MyServer"
+    }
+    vpc_security_group_ids               = [
+        aws_security_group.sg_public_instace.id
+    ]
+
+}
+```
+
+### Destruir los recursos
+
+`terraform destroy -auto-approve=true`
+
+    
