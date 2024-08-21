@@ -7,6 +7,7 @@
 6. [Terraform Taint](#schema6)
 7. [Logs en Terraform](#schema7)
 8. [Importar recursos](#schema8)
+9. [Count Vs For_each](#schema9)
 
 [REF](#schemaref)
 
@@ -690,4 +691,90 @@ y copiamos el resultado. Quedando así:
 
 `terraform destroy -auto-approve=true`
 
-    
+
+<hr>
+
+<a name="schema9"></a>
+
+## 9. Count Vs For_each
+En Terraform, tanto count como for_each son mecanismos que permiten la creación de múltiples instancias de un recurso, pero se utilizan en situaciones diferentes y tienen características distintas.
+
+### `count` en Terraform
+
+El atributo count es una forma sencilla de crear múltiples instancias de un recurso basado en un número entero.
+
+#### Características:
+- Uso Básico: Es ideal para casos en los que solo necesitas un número fijo de recursos, como "quiero 3 instancias de EC2".
+- Indexación: Los recursos creados con count se indexan a partir de 0. Esto significa que puedes acceder a cada recurso utilizando su índice, como aws_instance.example[0].
+- Limitaciones: Solo permite crear instancias basadas en un número entero y no es adecuado para crear recursos basados en valores específicos.
+
+```hcl
+resource "aws_instance" "example" {
+  count         = 3
+  ami           = "ami-123456"
+  instance_type = "t2.micro"
+
+  tags = {
+    Name = "example-instance-${count.index}"
+  }
+}
+```
+En este caso, Terraform creará 3 instancias EC2. Puedes acceder a cada instancia usando su índice, por ejemplo, aws_instance.example[0].
+
+### `for_each` en Terraform
+
+El atributo `for_each` permite crear múltiples instancias de un recurso basándose en un mapa o un conjunto de valores únicos, ofreciendo mayor flexibilidad que `count`.
+
+#### Características:
+- Uso Basado en Conjuntos y Mapas: Es ideal cuando tienes un conjunto de elementos únicos o un mapa y deseas crear recursos basados en cada elemento.
+- Identificación por Claves: Los recursos creados con for_each se identifican por la clave del mapa o el valor del conjunto, lo que facilita la identificación y manipulación de recursos específicos.
+- Flexibilidad: Es más flexible que count, ya que puedes asociar directamente un recurso con un elemento específico del conjunto o mapa.
+```hcl
+resource "aws_instance" "example" {
+  for_each = {
+    instance1 = "ami-123456"
+    instance2 = "ami-654321"
+  }
+  
+  ami           = each.value
+  instance_type = "t2.micro"
+
+  tags = {
+    Name = each.key
+  }
+}
+```
+En este ejemplo, Terraform creará dos instancias EC2, una con el nombre `instance1` y otra con el nombre `instance2`. La instancia `instance1` usará el AMI `"ami-123456"` y la instancia `instance2` usará `"ami-654321"`.
+
+### Comparación count vs for_each
+- Escenarios de Uso:
+
+    - `count`: Útil cuando necesitas un número fijo de recursos o cuando las diferencias entre los recursos son mínimas.
+    - `for_each`: Ideal cuando trabajas con un conjunto o un mapa de elementos únicos y necesitas una mayor granularidad o diferenciación entre los recursos.
+- Acceso a Recursos:
+
+    - `count`: Los recursos se identifican por un índice numérico (aws_instance.example[0]).
+    - `for_each`: Los recursos se identifican por claves (aws_instance.example["instance1"]).
+- Flexibilidad:
+    - `count`: Menos flexible, solo funciona con números enteros.
+    - `for_each`: Más flexible, puede usar mapas y conjuntos para definir recursos.
+### Resumen
+- `count`: Es simple y efectivo para crear un número fijo de recursos que son prácticamente idénticos, con diferencias menores.
+- `for_each`: Es más versátil y adecuado para crear múltiples recursos basados en valores específicos de un conjunto o mapa, permitiendo un mayor control y diferenciación entre los recursos.
+
+[Código del ejemplo](./practica_7/)
+
+- Primero ejemplo con lista de nombres, por lo tanto tiene índices.
+![Lista de nombres](./img/count_list.jpg)
+- Segundo ejemplo, eliminamos de la lista la instancia "apache",   `default = [ "mysql","jumpserver" ]`.
+![Delete apache](./img/list_apache_del.jpg)
+En este caso no ha eliminado la instancia apache, sino que ha cambiado el orden y la que ha elimiando es la última porque solo tenemos dos índices.
+No importa el elemento que borres, sino su posición.
+
+- Tercer ejemplo, con `foreach`, en este caso no usamos índices númericos sino índices con los nombres del set.
+![Foreach](./img/for_each_set.jpg)
+![Foreach](./img/foreach_state.jpg)
+- Eliminamos de la lista la instancia "apache",   `default = [ "mysql","jumpserver" ]`.
+![Foreach](./img/foreach_destroy.jpg)
+En este caso si elimina la instacia "apache".
+- También podemos usar `toset`para seguir usando `list(string)`
