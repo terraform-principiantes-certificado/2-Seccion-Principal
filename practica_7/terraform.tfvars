@@ -13,3 +13,7 @@ tags = {
 }
 
 sg_ingress_cidr = "0.0.0.0/0"
+
+enable_monitoring =  true
+
+enable_monitoring_num = 0

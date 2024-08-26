@@ -45,3 +45,30 @@ resource "aws_instance" "public_instance" {
   }
   
 }
+resource "aws_instance" "monitoring_instance" {
+  count = var.enable_monitoring ? 1:0
+  ami                     = "ami-0ba9883b710b05ac6"
+  instance_type           = "t2.micro"
+  subnet_id =  aws_subnet.public_subnet.id 
+  key_name = data.aws_key_pair.key.key_name
+  vpc_security_group_ids = [aws_security_group.sg_public_instace.id]
+
+  tags = {
+    "Name" = "Monitoreo"
+  }
+  
+}
+
+resource "aws_instance" "monitoring_instance_num" {
+  count = var.enable_monitoring_num == 1 ? 1:0
+  ami                     = "ami-0ba9883b710b05ac6"
+  instance_type           = "t2.micro"
+  subnet_id =  aws_subnet.public_subnet.id 
+  key_name = data.aws_key_pair.key.key_name
+  vpc_security_group_ids = [aws_security_group.sg_public_instace.id]
+
+  tags = {
+    "Name" = "Monitoreo"
+  }
+  
+}

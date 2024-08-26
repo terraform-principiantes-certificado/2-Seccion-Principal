@@ -25,3 +25,14 @@ variable "sg_ingress_cidr" {
   type = string
   
 }
+variable "enable_monitoring" {
+  
+  description = "Habilita el despliegue de un servidor de monitoreo"
+  type = bool
+}
+
+variable "enable_monitoring_num" {
+  
+  description = "Habilita el despliegue de un servidor de monitoreo"
+  type = number
+}

@@ -9,6 +9,7 @@
 8. [Importar recursos](#schema8)
 9. [Count Vs For_each](#schema9)
 10. [Funciones de Terraform](#schema10)
+11. [Estructura condicional](#schema11)
 
 
 [REF](#schemaref)
@@ -1039,3 +1040,24 @@ Terraform organiza sus funciones en varias categorías, dependiendo de su propó
     "large"  = "t2.medium"
     }
     ```
+
+
+<hr>
+
+<a name="schema11"></a>
+
+## 11. Estructura condicional
+
+En Terraform, las estructuras condicionales te permiten tomar decisiones dentro de tu configuración en función de ciertas condiciones. La estructura condicional más común en Terraform es el operador ternario, que se usa para seleccionar un valor u otro según una condición booleana.
+
+### Operador Ternario
+El operador ternario en Terraform tiene la siguiente sintaxis:
+
+```hcl
+condition ? true_value : false_value
+```
+- condition: Una expresión booleana que se evalúa como true o false.
+- true_value: El valor que se devuelve si la condición es true.
+- false_value: El valor que se devuelve si la condición es false.
+
+[Ejemplo](./practica_7/)
