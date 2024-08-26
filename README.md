@@ -8,6 +8,8 @@
 7. [Logs en Terraform](#schema7)
 8. [Importar recursos](#schema8)
 9. [Count Vs For_each](#schema9)
+10. [Funciones de Terraform](#schema10)
+
 
 [REF](#schemaref)
 
@@ -778,3 +780,262 @@ No importa el elemento que borres, sino su posición.
 ![Foreach](./img/foreach_destroy.jpg)
 En este caso si elimina la instacia "apache".
 - También podemos usar `toset`para seguir usando `list(string)`
+
+
+<hr>
+
+<a name="schema10"></a>
+
+## 10. Funciones de Terraform
+
+Para poder ver el funcionamiento de las funciones en Terraform, vamos a usar la consola de terraform, `terraform console` y para salir `exit`
+
+Las funciones en Terraform son herramientas poderosas que te permiten manipular y transformar datos dentro de tus configuraciones de infraestructura como código. Terraform incluye una amplia variedad de funciones que puedes utilizar en expresiones para gestionar valores, transformar datos, y controlar la lógica en tus configuraciones.
+
+### Tipos de Funciones en Terraform
+Terraform organiza sus funciones en varias categorías, dependiendo de su propósito:
+
+1. Funciones de Cadena (String Functions)
+
+    -  `lower` y `upper`: Convierte una cadena a minúsculas o mayúsculas.
+        ```hcl
+        lower("HELLO")  # "hello"
+        ```
+    - `concat`: Combina varias cadenas en una sola.
+        ```hcl
+        concat("foo", "bar")  # "foobar"
+        ```
+    - `format`: Da formato a una cadena utilizando especificadores de formato.
+        ```hcl
+        format("Hello, %s!", "World")  # "Hello, World!"
+        ```
+    - `replace`: Reemplaza todas las ocurrencias de una subcadena en una cadena.
+        ```hcl
+        replace("Hello World", "World", "Terraform")  # "Hello Terraform"
+        ```
+    - `title` en Terraform convierte la primera letra de cada palabra en una cadena de texto a mayúscula, mientras que el resto de las letras de la palabra permanecen en minúscula.
+        ```hcl
+        output "formatted_title" {
+        value = title("terraform infrastructure as code")
+        }
+        # Terraform Infrastructure As Code
+        ```
+    - `substr` en Terraform extrae una subcadena de una cadena dada, comenzando desde una posición específica y con una longitud definida.
+
+        Sintaxis:
+        ```hcl
+        substr(string, offset, length)
+        ```
+        - string: La cadena original de la que se va a extraer la subcadena.
+        - offset: La posición inicial desde donde comenzar la extracción (basada en índice cero).
+        - length: La longitud de la subcadena a extraer.
+        ```hcl
+        output "substring_example" {
+        value = substr("terraform", 0, 4) # terr
+        ```
+    - `contains` en Terraform se utiliza para verificar si un valor específico existe dentro de una lista o un conjunto de elementos.
+        ```hcl
+        contains(list, value)
+        ```
+        - list: La lista o conjunto en el que se va a buscar el valor.
+        - value: El valor que deseas comprobar si está presente en la lista.
+
+
+2. Funciones de Colecciones (Collection Functions)
+
+    - `length`: Devuelve el número de elementos en una lista, conjunto, o mapa.
+        ```hcl
+        length(["a", "b", "c"])  # 3
+        ```
+    - `element`: Devuelve el elemento de una lista en un índice específico.
+        ```hcl
+        element(["a", "b", "c"], 1)  # "b"
+        ```
+    - `join`: Combina los elementos de una lista en una cadena, usando un separador.
+        ```hcl
+        join(", ", ["a", "b", "c"])  # "a, b, c"
+        ```
+    - `lookup`: Devuelve el valor asociado a una clave específica en un mapa, con un valor por defecto si la clave no existe.
+        ```hcl
+        lookup({a = "apple", b = "banana"}, "a", "no fruit")  # "apple"
+        ```
+3. Funciones de Control de Lógica (Logical Functions)
+
+    - `coalesce`: Devuelve el primer argumento no nulo.
+        ```hcl
+        coalesce(null, "", "default")  # ""
+        ```
+    - `condition`: Implementa una lógica condicional. (En lugar de esta función, Terraform usa operadores ternarios).
+        ```hcl
+        condition ? true_value : false_value
+        ```
+    - `can`: Evalúa si una expresión es válida y no produce un error.
+        ```hcl
+        can(regex("a", "b"))  # false
+        ```
+4. Funciones Matemáticas (Numeric Functions)
+
+    - `min` y `max`: Devuelve el mínimo o máximo de una lista de números.
+        ```hcl
+        min(1, 2, 3)  # 1
+        max(1, 2, 3)  # 3
+        ```
+    - `abs`: Devuelve el valor absoluto de un número.
+        ```hcl
+        abs(-5)  # 5
+        ```
+    - `ceil` y `floor`: Devuelven el menor número entero mayor o igual, o menor o igual, respectivamente.
+        ```hcl
+        floor(5.9)  # 5
+        ```
+5. Funciones de Fecha y Hora (Date and Time Functions)
+
+    - `timestamp`: Devuelve la fecha y hora actuales en formato UTC.
+        ```hcl
+        timestamp()  # "2024-08-21T12:34:56Z"
+        ```
+    - `timeadd`: Suma un período de tiempo a un timestamp dado.
+        ```hcl
+        timeadd(timestamp(), "2h")  # Suma 2 horas al timestamp actual
+        ```
+6. Funciones de Depuración y Validación
+
+    - `file`: Lee el contenido de un archivo.
+        ```hcl
+        file("path/to/file.txt")
+        ```
+    - `log`: Imprime un mensaje de depuración en el registro de Terraform.
+        ```hcl
+        log("Debug message")
+        ```
+    - `try`: Evalúa expresiones y devuelve el primer resultado válido, ignorando los errores.
+        ```hcl
+        try(lookup(var.map, "key", "default"), "fallback")  # "default" si "key" no existe
+        ````
+7. funciones para trabajar con mapas `maps`
+
+- `lookup`: se utiliza para obtener el valor asociado a una clave específica en un mapa. Puedes especificar un valor predeterminado que se devuelve si la clave no existe en el mapa.
+
+    ```hcl
+    lookup(map, key, default)
+    ```
+    - map: El mapa en el que estás buscando.
+    - key: La clave cuyo valor deseas obtener.
+    - default: (Opcional) El valor que se devolverá si la clave no existe en el mapa.
+        ```hcl
+        variable "instance_types" {
+        type = map(string)
+        default = {
+            "small"  = "t2.micro"
+            "medium" = "t2.small"
+            "large"  = "t2.medium"
+        }
+        }
+
+        output "selected_instance" {
+        value = lookup(var.instance_types, "medium", "t2.micro")
+        }
+        # t2.small
+
+- `keys`: devuelve una lista de todas las claves de un mapa, en el orden en que fueron definidas.
+    ```hcl
+    keys(map)
+    ```
+    - map: El mapa del que deseas obtener las claves.
+
+        ```hcl
+        variable "instance_types" {
+        type = map(string)
+        default = {
+            "small"  = "t2.micro"
+            "medium" = "t2.small"
+            "large"  = "t2.medium"
+        }
+        }
+
+        output "map_keys" {
+        value = keys(var.instance_types)
+        }
+
+        # ["small", "medium", "large"]
+        ```
+
+- `values`: devuelve una lista con todos los valores de un mapa.
+    ```hcl
+    values(map)
+    ```
+    - map: El mapa del que deseas obtener los valores.
+
+    ```hcl
+    output "map_values" {
+    value = values(var.instance_types)
+    }
+
+    # ["t2.micro", "t2.small", "t2.medium"]
+    ```
+
+- `merge`: combina dos o más mapas en uno solo. Si hay claves duplicadas, el último valor sobrescribe a los anteriores.
+
+    ```hcl
+    merge(map1, map2, ...)
+    ```
+    - map1, map2, ...: Los mapas que deseas combinar.
+    
+    ```hcl
+    variable "map1" {
+    type = map(string)
+    default = {
+        "a" = "apple"
+        "b" = "banana"
+    }
+    }
+
+    variable "map2" {
+    type = map(string)
+    default = {
+        "b" = "blueberry"
+        "c" = "cherry"
+    }
+    }
+
+    output "merged_map" {
+    value = merge(var.map1, var.map2)
+    }
+
+    # resultado
+    ardu```ino
+    {
+    "a" = "apple"
+    "b" = "blueberry"
+    "c" = "cherry"
+    }
+    ```
+- `zipmap`: crea un mapa a partir de dos listas: una de claves y otra de valores. Cada clave se empareja con el valor correspondiente por su posición en la lista.
+
+    ```hcl
+    zipmap(keys, values)
+    ```
+    - keys: La lista de claves.
+    - values: La lista de valores.
+
+    ```hcl
+    variable "keys" {
+    default = ["small", "medium", "large"]
+    }
+
+    variable "values" {
+    default = ["t2.micro", "t2.small", "t2.medium"]
+    }
+
+    output "zipped_map" {
+    value = zipmap(var.keys, var.values)
+    }
+    # Resultado:
+
+    ardu```ino
+    {
+    "small"  = "t2.micro"
+    "medium" = "t2.small"
+    "large"  = "t2.medium"
+    }
+    ```
