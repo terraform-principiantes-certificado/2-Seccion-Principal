@@ -10,10 +10,12 @@ tags = {
     "cloud" = "AWS"
     "IAC" = "Terraform"
     "IAC_Version" = "1.9.3"
+    "project" = "cerberus"
+    "region" = "virginia"
 }
 
 sg_ingress_cidr = "0.0.0.0/0"
 
-enable_monitoring =  true
+#enable_monitoring =  true
 
-enable_monitoring_num = 0
+#enable_monitoring_num = 0

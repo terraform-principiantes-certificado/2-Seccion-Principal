@@ -10,6 +10,7 @@
 9. [Count Vs For_each](#schema9)
 10. [Funciones de Terraform](#schema10)
 11. [Estructura condicional](#schema11)
+12. [Locals](#schema12)
 
 
 [REF](#schemaref)
@@ -1061,3 +1062,35 @@ condition ? true_value : false_value
 - false_value: El valor que se devuelve si la condición es false.
 
 [Ejemplo](./practica_7/)
+
+
+<hr>
+
+<a name="schema12"></a>
+
+## 12. Locals
+
+Los `locals` en Terraform son bloques que permiten definir variables locales dentro de una configuración. Estos valores son inmutables y están diseñados para ser reutilizados en múltiples partes del código. Los locals ayudan a evitar la repetición de código, mejoran la legibilidad y facilitan la gestión de configuraciones complejas.
+
+### Definición de locals
+Un bloque locals se define de la siguiente manera:
+
+```hcl
+locals {
+  local_name = expression
+}
+```
+- local_name: Es el nombre que le das a la variable local.
+- expression: Es cualquier expresión válida en Terraform, como valores constantes, resultados de funciones, cálculos, concatenaciones, etc.
+
+- Primer ejemplo, con cadenas de string
+[Ejemplo](./practica_7/)
+
+- Segundo ejemplo, S3
+[Doc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket)
+
+![S3](./img/s3_sufix.jpg)
+
+
+
+`terraform destroy`
