@@ -1090,6 +1090,7 @@ locals {
 [Doc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket)
 
 ![S3](./img/s3_sufix.jpg)
+![Infra](./img/infra.jpg)
 
 
 
