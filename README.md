@@ -1095,3 +1095,32 @@ locals {
 
 
 `terraform destroy`
+
+
+
+## 13. Dynamic Blocks
+
+
+Los bloques dinámicos `dynamic blocks` en Terraform son una característica avanzada que te permite generar dinámicamente uno o más bloques de configuración dentro de un recurso o un módulo. Son especialmente útiles cuando necesitas repetir un mismo tipo de bloque dentro de un recurso varias veces, pero con diferentes parámetros.
+
+### ¿Qué Problema Resuelven los Bloques Dinámicos?
+Normalmente, si tienes múltiples instancias de un bloque anidado dentro de un recurso (como múltiples reglas de ingress o egress en un grupo de seguridad de AWS), tendrías que definir cada bloque de forma manual, lo que puede ser repetitivo y difícil de mantener si el número de bloques es grande o cambia dinámicamente.
+
+Los bloques dinámicos permiten automatizar este proceso, evitando la repetición de código y permitiendo que la configuración sea más flexible y mantenible.
+
+### Sintaxis de dynamic
+El bloque dynamic se estructura de la siguiente manera:
+
+```hcl
+dynamic "block_name" {
+  for_each = [iterable_expression]
+  content {
+    # Aquí dentro va el contenido del bloque que deseas repetir
+    attribute = each.value
+    # Otros atributos y configuraciones...
+  }
+}
+```
+- block_name: Es el nombre del tipo de bloque que deseas generar dinámicamente (por ejemplo, ingress, egress, tag, etc.).
+- for_each: Es una expresión que devuelve una lista, un mapa o un conjunto que se itera para generar un bloque por cada elemento.
+- content: Contiene la configuración que se repetirá, donde each.key y each.value pueden ser utilizados para acceder a las claves y valores de los elementos iterados.

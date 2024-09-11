@@ -27,7 +27,7 @@ variable "instacias" {
   description = "Nombre de las instacias"
   #type = set(string)
   type = list(string)
-  default = [ "apache","mysql","jumpserver" ]
+  default = [ "apache"]
 }
 
 
@@ -39,7 +39,7 @@ resource "aws_instance" "public_instance" {
   subnet_id =  aws_subnet.public_subnet.id 
   key_name = data.aws_key_pair.key.key_name
   vpc_security_group_ids = [aws_security_group.sg_public_instace.id]
-
+  user_data              = file("scripts/userdata.sh")
   tags = {
     "Name" = "${each.value}-${local.sufix}"
   }
