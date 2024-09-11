@@ -25,6 +25,11 @@ variable "sg_ingress_cidr" {
   type = string
   
 }
+
+variable "ingress_port_list" {
+  description = "Lista de puertos de ingress"
+  type = list(number)
+}
 # variable "enable_monitoring" {
   
 #   description = "Habilita el despliegue de un servidor de monitoreo"
