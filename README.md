@@ -1242,3 +1242,7 @@ resource "aws_instance" "example" {
 [Doc](https://registry.terraform.io/browse/modules)
 
 [Practica](./practica_8/)
+
+Vamos a usar un módulo de la comunidad.
+
+[Modulo](https://registry.terraform.io/modules/cloudposse/tfstate-backend/aws/latest)
