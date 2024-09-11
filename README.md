@@ -12,6 +12,7 @@
 11. [Estructura condicional](#schema11)
 12. [Locals](#schema12)
 13. [Dynamic blocks](#schema13)
+14. [Modulos](#schema14)
 
 
 [REF](#schemaref)
@@ -1127,3 +1128,115 @@ dynamic "block_name" {
 - block_name: Es el nombre del tipo de bloque que deseas generar dinámicamente (por ejemplo, ingress, egress, tag, etc.).
 - for_each: Es una expresión que devuelve una lista, un mapa o un conjunto que se itera para generar un bloque por cada elemento.
 - content: Contiene la configuración que se repetirá, donde each.key y each.value pueden ser utilizados para acceder a las claves y valores de los elementos iterados.
+
+<hr>
+
+<a name="schema14"></a>
+
+## 14. Modulos
+
+![Modulos](./img/modulos.jpg)
+
+En Terraform, un **módulo** es una unidad de organización y reutilización de código. Un módulo es simplemente una colección de archivos de configuración que definen una infraestructura. En esencia, todos los directorios de Terraform son módulos, ya que cada directorio contiene recursos y configuraciones que pueden ser reutilizados.
+
+### ¿Por qué Usar Módulos?
+Los módulos permiten organizar y reutilizar configuraciones, proporcionando:
+
+1. **Reutilización de código**: Puedes definir un conjunto de recursos comunes y usarlos en diferentes partes de tu infraestructura.
+2. **Mantenimiento sencillo**: Actualizar un módulo cambia automáticamente todas las instancias donde se utiliza.
+3. **Abstracción**: Puedes encapsular configuraciones complejas dentro de un módulo y usarlo de manera más simple.
+4. **Organización**: Mejora la estructura y legibilidad del código en grandes infraestructuras.
+### Ejemplo Básico de Módulo
+Un módulo en Terraform tiene una estructura similar a la de una configuración estándar de Terraform. Puede contener:
+
+- Variables (variables.tf): Definen los valores de entrada.
+- Recursos (main.tf): Contienen los recursos que crean la infraestructura.
+- Outputs (outputs.tf): Definen los valores de salida que pueden ser usados por otros módulos o configuraciones.
+### Estructura de un Módulo
+Supongamos que tenemos un módulo llamado ec2_instance:
+
+```css
+module/
+├── main.tf
+├── variables.tf
+└── outputs.tf
+```
+
+### Usar un Módulo en Terraform
+Para usar un módulo, simplemente lo invocas desde otro archivo main.tf. La invocación de un módulo se realiza mediante el bloque module, donde defines el origen del módulo (puede estar en un repositorio, una URL o una ruta local) y proporcionas valores para sus variables de entrada.
+
+
+### Módulos Hijos (Submódulos)
+Los módulos hijos (también conocidos como submódulos) son módulos que se invocan desde otro módulo. En otras palabras, cuando un módulo invoca otro módulo, el módulo invocado se convierte en un módulo hijo.
+
+#### Cómo Funcionan los Módulos Hijos
+Si un módulo A invoca un módulo B, entonces B es un módulo hijo de A. Esta jerarquía permite construir configuraciones complejas y modulares, donde cada módulo se encarga de una parte de la infraestructura. Los módulos hijos se usan para dividir y organizar la lógica de manera más granular.
+
+#### Ejemplo de Módulo con Módulo Hijo
+Supongamos que tenemos un módulo padre que invoca un módulo hijo para crear una VPC y otro módulo hijo para crear una instancia EC2 dentro de esa VPC.
+
+#### Estructura del Módulo Padre
+```css
+parent_module/
+├── main.tf
+├── variables.tf
+└── outputs.tf
+```
+Contenido de main.tf del Módulo Padre
+```hcl
+module "vpc" {
+  source = "./vpc_module"  # Módulo hijo que crea la VPC
+  cidr   = var.vpc_cidr
+}
+
+module "ec2" {
+  source        = "./ec2_module"  # Módulo hijo que crea la EC2
+  ami           = var.ami
+  instance_type = var.instance_type
+  subnet_id     = module.vpc.public_subnet_id
+}
+```
+Módulo Hijo vpc_module
+Este módulo crea una VPC y subredes:
+
+```hcl
+resource "aws_vpc" "example" {
+  cidr_block = var.cidr
+}
+
+resource "aws_subnet" "public_subnet" {
+  vpc_id            = aws_vpc.example.id
+  cidr_block        = "10.0.1.0/24"
+  availability_zone = "us-west-1a"
+}
+
+output "public_subnet_id" {
+  value = aws_subnet.public_subnet.id
+}
+```
+Módulo Hijo ec2_module
+Este módulo lanza una instancia EC2 en la VPC creada por el módulo anterior:
+
+```hcl
+resource "aws_instance" "example" {
+  ami           = var.ami
+  instance_type = var.instance_type
+  subnet_id     = var.subnet_id
+
+  tags = {
+    Name = "example-instance"
+  }
+}
+```
+#### Beneficios de los Módulos Hijos
+- Modularidad: Permite descomponer infraestructuras complejas en componentes más pequeños y manejables.
+- Reutilización: Los módulos hijos pueden ser invocados por diferentes módulos padres, facilitando la reutilización de código.
+- Organización: Mejora la organización del código, especialmente en infraestructuras grandes.
+#### Prácticas Recomendadas para el Uso de Módulos
+- Separar módulos por función: Divide los módulos según los componentes de la infraestructura (por ejemplo, un módulo para VPC, otro para instancias EC2, etc.).
+- Versionamiento: Siempre que sea posible, usa módulos versionados (especialmente si provienen de fuentes externas como el Terraform Registry) para garantizar estabilidad.
+- Documentación: Documenta tus módulos y submódulos para que otros miembros del equipo puedan usarlos fácilmente.
+- Variables de entrada y salida: Define claramente las variables de entrada y los outputs que se necesitan para facilitar la integración con otros módulos.
+
+
+[Doc](https://registry.terraform.io/browse/modules)
