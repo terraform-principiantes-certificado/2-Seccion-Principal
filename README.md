@@ -11,6 +11,7 @@
 10. [Funciones de Terraform](#schema10)
 11. [Estructura condicional](#schema11)
 12. [Locals](#schema12)
+13. [Dynamic blocks](#schema13)
 
 
 [REF](#schemaref)
@@ -1096,7 +1097,9 @@ locals {
 
 `terraform destroy`
 
+<hr>
 
+<a name="schema13"></a>
 
 ## 13. Dynamic Blocks
 
