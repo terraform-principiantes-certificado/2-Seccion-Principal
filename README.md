@@ -1240,3 +1240,5 @@ resource "aws_instance" "example" {
 
 
 [Doc](https://registry.terraform.io/browse/modules)
+
+[Practica](./practica_8/)
