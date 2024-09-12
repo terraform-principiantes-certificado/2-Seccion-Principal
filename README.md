@@ -13,9 +13,10 @@
 12. [Locals](#schema12)
 13. [Dynamic blocks](#schema13)
 14. [Modulos](#schema14)
+15. [Terraform Cloud](#schema15)
+16. [ Herramientas complementarias](#schema16)
 
-
-[REF](#schemaref)
+17. [Glosario](#schemaref)
 
 <hr>
 
@@ -1246,3 +1247,73 @@ resource "aws_instance" "example" {
 Vamos a usar un módulo de la comunidad.
 
 [Modulo](https://registry.terraform.io/modules/cloudposse/tfstate-backend/aws/latest)
+
+
+<hr>
+
+<a name="schema15"></a>
+
+## 15. Terraform Cloud
+
+![Terraform Cloud](./img/cloud.jpg)
+![Terraform Cloud](./img/cloud2.jpg)
+![Terraform Cloud](./img/cloud3.jpg)
+
+Terraform Cloud es una solución SaaS para equipos que usan Terraform, proporcionando una plataforma colaborativa, centralizada y automatizada para gestionar la infraestructura como código. Ofrece almacenamiento remoto del estado, ejecución automática de planes, integración con sistemas de control de versiones y herramientas de notificación, y políticas de gobernanza para un mayor control y seguridad. Es especialmente útil para equipos grandes o distribuidos, proporcionando una mejor forma de gestionar la infraestructura de manera eficiente y segura.
+
+<hr>
+
+<a name="schema16"></a>
+
+## 16. Herramientas complementarias
+
+### 1. Infracost
+
+- [Repositorio en github](https://github.com/infracost/infracost)
+- [Pagina oficial](https://www.infracost.io/docs/#quick-start)
+- Plugin de visual studio `Infracost` 
+**Infracost** es una herramienta de código abierto que te permite estimar el costo de tu infraestructura en la nube antes de implementarla, integrándose directamente con tus archivos de configuración de Terraform. Te proporciona un desglose detallado de los costos basados en los recursos declarados, ayudando a prever los gastos y a optimizar el uso de la infraestructura en plataformas como AWS, Google Cloud, y Azure. Infracost se puede integrar con flujos de trabajo CI/CD para generar informes de costos automáticamente al hacer cambios en tu infraestructura.
+
+Características principales:
+
+- Estimaciones en tiempo real de costos de la nube.
+- Comparación de costos entre diferentes configuraciones.
+- Integración con Terraform y flujos de trabajo CI/CD.
+
+### 2. Terraform Security
+- [Repositorio en github](https://github.com/aquasecurity/tfsec)
+- Plugin de visual studio `tfsec` 
+**Tfsec** es una herramienta de seguridad estática para Terraform que analiza los archivos de configuración buscando vulnerabilidades y malas prácticas. Es compatible con múltiples proveedores de nube, como AWS, Azure, y Google Cloud, y detecta posibles problemas de seguridad antes de que los recursos se implementen, como permisos excesivos, configuraciones inseguras o recursos que podrían exponer información sensible.
+
+Características principales:
+
+- Análisis de seguridad estático de Terraform.
+- Soporte para múltiples proveedores de nube.
+- Informe de errores de seguridad con recomendaciones para resolverlos.-
+
+### 3. Terraform Linter
+- [Repositorio en github](https://github.com/terraform-linters/tflint)
+
+Un **Terraform Linter** es una herramienta que revisa el estilo y la sintaxis de los archivos de configuración de Terraform para garantizar que sigan las mejores prácticas y convenciones. El linter ayuda a mejorar la calidad y coherencia del código, sugiriendo cambios para reducir errores y mejorar la legibilidad. Algunas herramientas populares incluyen tflint, que analiza problemas de configuración y errores potenciales.
+
+Características principales:
+
+- Verifica la sintaxis y el estilo de los archivos Terraform.
+- Mejora la consistencia y la calidad del código.
+- Identifica errores comunes antes de ejecutar Terraform.
+
+### 4. Terrafomr Environment
+- [Repositorio en github](https://github.com/tofuutils/tenv)
+**Tenv** es un proyecto para gestionar múltiples entornos (dev, staging, prod) en Terraform de manera sencilla. A través de tenv, puedes usar la misma configuración de Terraform pero adaptarla a diferentes entornos sin duplicar archivos. Esto permite gestionar eficientemente los recursos según el entorno en el que se esté trabajando, aplicando diferentes configuraciones de manera modular.
+
+Características principales:
+
+- Facilita la gestión de múltiples entornos en Terraform.
+- Evita la duplicación de archivos entre diferentes entornos.
+- Uso modular y eficiente de configuraciones.
+
+<hr>
+
+<a name="schemaref"></a>
+
+[Glosario](https://developer.hashicorp.com/terraform/docs/glossary)
