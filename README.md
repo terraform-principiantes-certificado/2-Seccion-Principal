@@ -1316,4 +1316,6 @@ Características principales:
 
 <a name="schemaref"></a>
 
-## 17. [Glosario](https://developer.hashicorp.com/terraform/docs/glossary)
+## 17. Glosario
+
+[Glosario](https://developer.hashicorp.com/terraform/docs/glossary)
